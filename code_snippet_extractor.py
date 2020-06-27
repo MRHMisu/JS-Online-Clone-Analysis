@@ -29,9 +29,10 @@ def extract_code_snippets(posts_xml_path, language, code_snippet_output, batch_s
                 if answer_id in accepted_answers_ids:
                     accepted_answers_ids.remove(answer_id)
                     populate__code_snippets(element, accepted_answers_code_snippets, question_id, answer_id)
-                    store_code_snippets_in_batch(accepted_answers_code_snippets, code_snippet_output, batch_size);
-                    code_snippets_count += batch_size
-                    print("Collecting " + str(code_snippets_count) + " code snippets...")
+                    code_snippets_count += store_code_snippets_in_batch(accepted_answers_code_snippets,
+                                                                        code_snippet_output, batch_size,
+                                                                        code_snippets_count);
+
         element.clear()
     write_list_of_code_snippets(accepted_answers_code_snippets, code_snippet_output);
 
@@ -53,9 +54,13 @@ def populate__code_snippets(element, accepted_answers_code_snippets, question_id
         return
 
 
-def store_code_snippets_in_batch(accepted_answers_code_snippets, code_snippet_output, batch_size):
-    if len(accepted_answers_code_snippets) > batch_size:
+def store_code_snippets_in_batch(accepted_answers_code_snippets, code_snippet_output, batch_size, code_snippets_count):
+    if len(accepted_answers_code_snippets) >= batch_size:
         write_list_of_code_snippets(accepted_answers_code_snippets, code_snippet_output);
+        print("Collecting " + str(code_snippets_count) + " code snippets...")
+        return batch_size
+    else:
+        return 0;
 
 
 def write_list_of_code_snippets(code_snippets_list, path):
