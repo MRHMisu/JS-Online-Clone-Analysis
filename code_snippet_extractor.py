@@ -42,12 +42,13 @@ def populate__code_snippets(element, accepted_answers_code_snippets, question_id
         root = ET.fromstring(accepted_answer)
         for snippet in root.iter('code'):  # explore all <code>*</code> elements
             code = snippet.text
-            line_of_code = code.count('\n') + 1
-            opening_tag = "<code QuestionId=\"" + question_id + "\"" + "AnswerId=\"" + answer_id + "\"" + "LOC=\"" + str(
-                line_of_code) + "\"" + ">"
-            closing_tag = "</code>"
-            complete_element = opening_tag + code + closing_tag + '\n'
-            accepted_answers_code_snippets.add(complete_element)
+            if not code:
+                line_of_code = len(code.splitlines()) + 1
+                opening_tag = "<code QuestionId=\"" + question_id + "\"" + "AnswerId=\"" + answer_id + "\"" + "LOC=\"" + str(
+                    line_of_code) + "\"" + ">"
+                closing_tag = "</code>"
+                complete_element = opening_tag + code + closing_tag + '\n'
+                accepted_answers_code_snippets.add(complete_element)
     except ET.ParseError:
         return
 
