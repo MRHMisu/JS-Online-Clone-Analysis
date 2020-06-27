@@ -21,8 +21,8 @@ def extract_code_snippets(posts_xml_path, language, code_snippet_output, batch_s
     for rc, (event, element) in enumerate(xml_parser):
         if element.tag == "row":
             if element.get("PostTypeId") == "1":  # explore the question
-                if element.get("AcceptedAnswerId") and language in element.get("Tags"):
-                    accepted_answers_ids.add(element.get("AcceptedAnswerId"))
+                #if element.get("AcceptedAnswerId"):# and language in element.get("Tags"):
+                accepted_answers_ids.add(element.get("AcceptedAnswerId"))
             elif element.get("PostTypeId") == "2":  # explore the answer
                 answer_id = element.get("Id")
                 question_id = element.get("ParentId")
