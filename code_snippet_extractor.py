@@ -28,30 +28,13 @@ def extract_code_snippets(posts_xml_path, language, code_snippet_output, batch_s
                 question_id = element.get("ParentId")
                 if answer_id in accepted_answers_ids:
                     accepted_answers_ids.remove(answer_id)
-                    populate__code_snippets_as_xml(element, accepted_answers_code_snippets, question_id, answer_id)
+                    populate__code_snippets_as_csv(element, accepted_answers_code_snippets, question_id, answer_id)
                     code_snippets_count += store_code_snippets_in_batch(accepted_answers_code_snippets,
                                                                         code_snippet_output, batch_size,
                                                                         code_snippets_count);
 
         element.clear()
-    write_list_of_code_snippets(accepted_answers_code_snippets, code_snippet_output);
-
-
-def populate__code_snippets_as_xml(element, accepted_answers_code_snippets, question_id, answer_id):
-    accepted_answer = "<?xml version=\"1.0\"?>" + '\n' + "<answer>" + element.get("Body") + "</answer>" + '\n'
-    try:
-        root = ET.fromstring(accepted_answer)
-        for snippet in root.iter('code'):  # explore all <code>*</code> elements
-            code = snippet.text
-            if code and not code.isspace():
-                line_of_code = len(code.splitlines())
-                opening_tag = "<code QuestionId=\"" + question_id + "\"" + "AnswerId=\"" + answer_id + "\"" + "LOC=\"" + str(
-                    line_of_code) + "\"" + ">"
-                closing_tag = "</code>"
-                complete_element = opening_tag + code + closing_tag + '\n'
-                accepted_answers_code_snippets.add(complete_element)
-    except ET.ParseError:
-        return
+    write_lines(accepted_answers_code_snippets, code_snippet_output);
 
 
 def populate__code_snippets_as_csv(element, accepted_answers_code_snippets, question_id, answer_id):
@@ -62,6 +45,7 @@ def populate__code_snippets_as_csv(element, accepted_answers_code_snippets, ques
             code = snippet.text
             if code and not code.isspace():
                 line_of_code = len(code.splitlines())
+                # if line_of_code > 0:  # only takes sinippets that contains at least n lines
                 complete_element = answer_id + "," + question_id + "," + str(
                     line_of_code) + "," + code.encode().hex() + '\n'
                 accepted_answers_code_snippets.add(complete_element)
@@ -71,7 +55,7 @@ def populate__code_snippets_as_csv(element, accepted_answers_code_snippets, ques
 
 def store_code_snippets_in_batch(accepted_answers_code_snippets, code_snippet_output, batch_size, code_snippets_count):
     if len(accepted_answers_code_snippets) >= batch_size:
-        write_list_of_code_snippets(accepted_answers_code_snippets, code_snippet_output);
+        write_lines(accepted_answers_code_snippets, code_snippet_output);
         accepted_answers_code_snippets.clear()
         print("Collecting " + str(code_snippets_count) + " code snippets...")
         return batch_size
@@ -79,15 +63,9 @@ def store_code_snippets_in_batch(accepted_answers_code_snippets, code_snippet_ou
         return 0;
 
 
-def write_list_of_code_snippets(code_snippets_list, path):
+def write_lines(contents, path):
     file_writer = open(path, 'a')
-    file_writer.writelines(code_snippets_list)
-    file_writer.close()
-
-
-def write_xml_tag(tag, path):
-    file_writer = open(path, 'a')
-    file_writer.writelines(tag)
+    file_writer.writelines(contents)
     file_writer.close()
 
 
@@ -96,16 +74,10 @@ if __name__ == "__main__":
     # python code_snippet_extractor.py sample-posts.xml language_tag code_snippet_xml_output batch_size
     so_post_xml_path = sys.argv[1]
     language_tag = sys.argv[2]
-    code_snippet_xml_output = sys.argv[3]
+    code_snippet_output = sys.argv[3]
     batch_size = int(sys.argv[4])
 
-    XML_DEFINITION = "<?xml version=\"1.0\"?>"
-    OPENING_TAG = "<code_snippets language=\"" + language_tag + "\">"
-    CLOSING_TAG = "</code_snippets>"
-
-    first_line = XML_DEFINITION + '\n' + OPENING_TAG + '\n',
-
-    write_xml_tag(first_line, code_snippet_xml_output)
-    extract_code_snippets(so_post_xml_path, language_tag, code_snippet_xml_output, batch_size)
-    write_xml_tag(CLOSING_TAG, code_snippet_xml_output)
+    header = "answer_id" + "," + "question_id" + "," + "loc" + "," + "code_sinippet" + '\n'
+    write_lines(header, code_snippet_output)
+    extract_code_snippets(so_post_xml_path, language_tag, code_snippet_output, batch_size)
     sys.exit()
