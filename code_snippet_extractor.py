@@ -42,7 +42,7 @@ def populate__code_snippets(element, accepted_answers_code_snippets, question_id
         root = ET.fromstring(accepted_answer)
         for snippet in root.iter('code'):  # explore all <code>*</code> elements
             code = snippet.text
-            if not code:
+            if code and not code.isspace():
                 line_of_code = len(code.splitlines()) + 1
                 opening_tag = "<code QuestionId=\"" + question_id + "\"" + "AnswerId=\"" + answer_id + "\"" + "LOC=\"" + str(
                     line_of_code) + "\"" + ">"
