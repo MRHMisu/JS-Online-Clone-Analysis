@@ -7,6 +7,7 @@ import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 
 
 def extract_loc_frequency_of_code_snippet(path):
@@ -34,6 +35,8 @@ def get_loc(path):
             loc = int(row[2])
             lines.append(loc)
     lines = list(filter((1).__ne__, lines))
+    lines = list(filter((2).__ne__, lines))
+    lines = list(filter((3).__ne__, lines))
     return np.array(lines)
 
 
@@ -45,20 +48,26 @@ if __name__ == "__main__":
     code_snippet_loc = get_loc(code_snippet_csv)
 
     # matplotlib histogram
-    plt.hist(code_snippet_loc, color='blue', edgecolor='black',
-             bins=int(180 / 5))
+    # plt.hist(code_snippet_loc, color='blue', edgecolor='black',
+    #        bins=100)
 
     # seaborn histogram
-    # sns.distplot(code_snippet_loc, hist=True, kde=False, bins=32, color='blue',
-    #           hist_kws={'edgecolor': 'black'})
+    kwargs = dict(hist_kws={'alpha': .6}, kde_kws={'linewidth': 2})
+    plt.figure(figsize=(10, 7), dpi=80)
 
+    # sns.distplot(code_snippet_loc, hist=True, kde=True, bins=100, color='blue',
+    #            hist_kws={'edgecolor': 'black'})
+
+    sns.distplot(code_snippet_loc, color="dodgerblue", bins=100, label="Compact", **kwargs)
     # Add labels
     plt.title('LOC Distribution in SO Code Snippets')
     plt.xlabel('LOC')
     plt.ylabel('Frequency')
     # plt.ylim(0, 50)
     # plt.xlim(0, 50)
-    plt.xticks(list(range(0, 90,5))) 
+    plt.xticks(list(range(0, 90, 5)))
+    plt.xlim(0, 90)
+    # plt.legend();
 
     # fig = plt.gcf()
     plt.show()
