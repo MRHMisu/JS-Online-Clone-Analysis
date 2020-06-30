@@ -10,13 +10,37 @@ import numpy as np
 import seaborn as sns
 
 
+
+def group_code_snippet_by_loc(path, output):
+    lines=[];
+    lines.append("group,loc\n");
+    with open(path) as csvfile:
+        readCSV = csv.reader(csvfile, delimiter=',')
+        next(readCSV)
+        for row in readCSV:
+            loc = int(row[2])
+            if loc <6:
+                group= "Boiler-Plate"
+            elif loc < 10:
+                group = "Fair"
+            elif loc >= 10:
+                group = "Good"
+            element=str(group)+","+str(loc)+"\n"
+            lines.append(element)
+    write_lines(lines, output)
+
+def write_lines(contents, path):
+    file_writer = open(path, 'w')
+    file_writer.writelines(contents)
+    file_writer.close()
+
 def extract_loc_frequency_of_code_snippet(path):
     frequency_map = {}
     with open(path) as csvfile:
         readCSV = csv.reader(csvfile, delimiter=',')
         next(readCSV)
         for row in readCSV:
-            loc = row[2]
+            loc = int(row[2])
             if loc in frequency_map:
                 frequency_map[loc] = frequency_map[loc] + 1
             else:
@@ -24,6 +48,7 @@ def extract_loc_frequency_of_code_snippet(path):
     frequency_map = dict(sorted(frequency_map.items()))
     print(frequency_map)
     return frequency_map
+
 
 
 def get_loc(path):
@@ -40,37 +65,22 @@ def get_loc(path):
     return np.array(lines)
 
 
+
+
+
+
 if __name__ == "__main__":
     # code_snippet_csv = sys.argv[1]
     # loc_distribution_output = sys.argv[2]
-    code_snippet_csv = "sample_snippet_output.csv"
-    extract_loc_frequency_of_code_snippet(code_snippet_csv)
-    code_snippet_loc = get_loc(code_snippet_csv)
+    code_snippet_csv = "/home/stackoverflow/java_accepted_code_snippet.csv"
+    code_snippet_catagory="/home/stackoverflow/java_code_snippet_catagory.csv"
+    group_code_snippet_by_loc(code_snippet_csv,code_snippet_catagory)
+    #extract_loc_frequency_of_code_snippet(code_snippet_csv)
+    #code_snippet_loc = get_loc(code_snippet_csv)
+    #max_line=max(code_snippet_loc)
+    #min_line=min(code_snippet_loc);
 
-    # matplotlib histogram
-    # plt.hist(code_snippet_loc, color='blue', edgecolor='black',
-    #        bins=100)
+    #print("max="+str(max_line));
+    #print("min=" + str(min_line));
 
-    # seaborn histogram
-    kwargs = dict(hist_kws={'alpha': .6}, kde_kws={'linewidth': 2})
-    plt.figure(figsize=(10, 7), dpi=80)
-
-    # sns.distplot(code_snippet_loc, hist=True, kde=True, bins=100, color='blue',
-    #            hist_kws={'edgecolor': 'black'})
-
-    sns.distplot(code_snippet_loc, color="dodgerblue", bins=100, label="Compact", **kwargs)
-    # Add labels
-    plt.title('LOC Distribution in SO Code Snippets')
-    plt.xlabel('LOC')
-    plt.ylabel('Frequency')
-    # plt.ylim(0, 50)
-    # plt.xlim(0, 50)
-    plt.xticks(list(range(0, 90, 5)))
-    plt.xlim(0, 90)
-    # plt.legend();
-
-    # fig = plt.gcf()
-    plt.show()
-    # plt.draw()
-    # fig.savefig('loc_distribution.png', dpi=100)
     sys.exit()
