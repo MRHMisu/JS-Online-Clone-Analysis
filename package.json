@@ -1,0 +1,20 @@
+{
+  "name": "so-js-code-analysis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^7.4.0",
+    "jshint": "^2.11.1"
+  },
+  "dependencies": {
+    "csv-parser": "^2.3.3",
+    "tape": "^5.0.1"
+  }
+}

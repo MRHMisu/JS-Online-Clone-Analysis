@@ -34,14 +34,29 @@ def download_and_save_a_repository(repo, zip_url, save_file_path, list_of_repo):
         print("Already downloaded the archive " + repo + ", skipping...")
 
 
+def construct_url(lan, min_star):
+    base = "https://github.com/search"
+    query = "q=stars%3A%3E{star}+language%3A{language}"
+    query_filter = "o=desc&s=forks&type=Repositories"
+    pagination = "p{}"
+    complete_url = base + "?" + query + "&" + query_filter
+    pagination_rul = complete_url.format(star=min_star, language=lan) + "&" + pagination
+    return pagination_rul
+
+
+def download_repo(url, num_of_repo):
+    number_of_page = (num_of_repo / 10) + 1
+    for i in range(number_of_page):
+        if (num_of_repo > 0):
+            print("Downloading page " + str(i + 1))
+            download_repository_each_search_result_page(url.format(i + 1), dir_path_to_store_downloaded_repo)
+            num_of_repo -= 1
+
+
 if __name__ == "__main__":
-
-    dir_path_to_store_downloaded_repo = "/home/mrhmisu/UCL-MS/Test-Data/Download-JS-Reop"  # "#sys.argv[1]
-
-    url = "https://github.com/search?o=desc&q=stars%3A%3E35+language%3AJavaScript&s=forks&type=Repositories&p={}"
-    # for each page
-    for i in range(1):
-        print("Downloading page " + str(i + 1))
-        download_repository_each_search_result_page(url.format(i + 1), dir_path_to_store_downloaded_repo)
-        print("Done One")
-        break;
+    language = "JavaScript"  # sys.argv[1]
+    minimum_star = 35  # sys.argv[2]
+    dir_path_to_store_downloaded_repo = "/home/mrhmisu/UCL-MS/Test-Data/Download-JS-Reop"  # "#sys.argv[3]
+    number_of_repo = 100  # sys.argv[4]
+    url = construct_url(language, minimum_star);
+    download_repo(url, number_of_repo)
