@@ -3,7 +3,7 @@
  * the ESLint parser ESPree.
  *
  * How to run the script
- * ~/node Git-JS-Repository-Validator.js repositoryPath
+ * ~:node Git-JS-Repository-Validator.js repositoryPath
  */
 
 'use strict'

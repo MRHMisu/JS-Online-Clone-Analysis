@@ -26,8 +26,6 @@ function readCodeSnippets(path, outputDir) {
                 console.log("Counter=>" + counter + '\n');
                 counter++;
             }
-            //console.log(i + '\n');
-            //i++;
 
         })
         .on('end', function () {

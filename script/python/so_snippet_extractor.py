@@ -31,10 +31,10 @@ def extract_code_snippets(posts_xml_path, language_tag, code_snippet_output, bat
                     populate__code_snippets_as_csv(element, accepted_answers_code_snippets, question_id, answer_id)
                     code_snippets_count += store_code_snippets_in_batch(accepted_answers_code_snippets,
                                                                         code_snippet_output, batch_size,
-                                                                        code_snippets_count);
+                                                                        code_snippets_count)
 
         element.clear()
-    write_lines(accepted_answers_code_snippets, code_snippet_output);
+    write_lines(accepted_answers_code_snippets, code_snippet_output)
 
 
 def populate__code_snippets_as_csv(element, accepted_answers_code_snippets, question_id, answer_id):
@@ -57,12 +57,12 @@ def populate__code_snippets_as_csv(element, accepted_answers_code_snippets, ques
 
 def store_code_snippets_in_batch(accepted_answers_code_snippets, code_snippet_output, batch_size, code_snippets_count):
     if len(accepted_answers_code_snippets) >= batch_size:
-        write_lines(accepted_answers_code_snippets, code_snippet_output);
+        write_lines(accepted_answers_code_snippets, code_snippet_output)
         accepted_answers_code_snippets.clear()
         print("Collecting " + str(code_snippets_count) + " code snippets...")
         return batch_size
     else:
-        return 0;
+        return 0
 
 
 def write_lines(contents, path):

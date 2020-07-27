@@ -1,4 +1,4 @@
-var jshint = require("../node_modules/jshint/src/jshint.js");
+var jshint = require("jshint");
 
 const fs = require('fs');
 const csv = require('csv-parser');

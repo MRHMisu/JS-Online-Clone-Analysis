@@ -31,7 +31,7 @@ const ecmaVersion = 2020;
  * @param soFilteredCodeSnippetPath
  * @param outputDirectoryPath
  */
-function generateValidatedSOJSCodeSnippets(soFilteredCodeSnippetPath, outputDirectoryPath) {
+function validateSOJSCodeSnippets(soFilteredCodeSnippetPath, outputDirectoryPath, loc) {
     let totalCodeSnippets = 0;
     let validCodeSnippets = 0;
     let inValidCodeSnippets = 0;
@@ -42,7 +42,7 @@ function generateValidatedSOJSCodeSnippets(soFilteredCodeSnippetPath, outputDire
             totalCodeSnippets++;
             let codeSnippet = covertHexStringToAscii(row['code_snippet']);
             let snippetLength = row['loc'];
-            if (snippetLength >= 10) {
+            if (snippetLength >= loc) {
                 if (isValidatedCodeSnippet(codeSnippet)) {
                     let fileName = row['question_id'] + "_" + row['block_position'] + ".js";
                     let filePath = outputDirectoryPath + "/" + fileName;
@@ -59,18 +59,6 @@ function generateValidatedSOJSCodeSnippets(soFilteredCodeSnippetPath, outputDire
 
 }
 
-function isValidFileAndDirectory(soFilteredCodeSnippetPath, outputDirectoryPath) {
-    if (fs.existsSync(outputDirectoryPath) && fs.existsSync(soFilteredCodeSnippetPath)) return true;
-    return false;
-}
-
-function printStatistic(totalCodeSnippets, validCodeSnippets, inValidCodeSnippets) {
-    console.log("#########################################################")
-    console.log("Total Code-Snippets:=" + totalCodeSnippets);
-    console.log("Valid Code-Snippets:=" + validCodeSnippets);
-    console.log("Invalid Code-Snippets:=" + inValidCodeSnippets);
-    console.log("#########################################################")
-}
 
 function isValidatedCodeSnippet(sourceSnippet) {
     const scriptMood = "script";
@@ -108,6 +96,19 @@ function isValidated(sourceSnippet, sourceType) {
     }
 }
 
+function isValidFileAndDirectoryAndLOC(soFilteredCodeSnippetPath, outputDirectoryPath, loc) {
+    if (fs.existsSync(outputDirectoryPath) && fs.existsSync(soFilteredCodeSnippetPath) && loc > 0) return true;
+    return false;
+}
+
+function printStatistic(totalCodeSnippets, validCodeSnippets, inValidCodeSnippets) {
+    console.log("#########################################################")
+    console.log("Total Code-Snippets:=" + totalCodeSnippets);
+    console.log("Valid Code-Snippets:=" + validCodeSnippets);
+    console.log("Invalid Code-Snippets:=" + inValidCodeSnippets);
+    console.log("#########################################################")
+}
+
 function writeValidatedCodeSnippet(content, fileName) {
     fs.writeFile(fileName, content, function (err) {
         if (err) throw err;
@@ -119,8 +120,9 @@ function executeScript() {
     let cmdArguments = process.argv.slice(2);
     let soFilteredCodeSnippetPath = cmdArguments[0];
     let outputDirectoryPath = cmdArguments[1];
-    if (isValidFileAndDirectory(soFilteredCodeSnippetPath, outputDirectoryPath)) {
-        generateValidatedSOJSCodeSnippets(soFilteredCodeSnippetPath, outputDirectoryPath);
+    let loc = cmdArguments[2];
+    if (isValidFileAndDirectoryAndLOC(soFilteredCodeSnippetPath, outputDirectoryPath, loc)) {
+        validateSOJSCodeSnippets(soFilteredCodeSnippetPath, outputDirectoryPath, loc);
     } else {
         console.log("Invalid Arguments");
     }
