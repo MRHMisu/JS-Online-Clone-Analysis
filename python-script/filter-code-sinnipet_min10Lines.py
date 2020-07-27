@@ -4,14 +4,15 @@ import sys
 
 def filter_code_snippet_by_loc(path, output):
     code_snippet_min_10_lines = []
-    code_snippet_min_10_lines.append("answer_id,question_id,loc,code_snippet" + '\n')
+    header = "question_id" + "," + "answer_id" + "," + "block_position" + "," + "loc" + "," + "code_snippet" + '\n'
+    code_snippet_min_10_lines.append(header)
     with open(path) as csvfile:
         readCSV = csv.reader(csvfile, delimiter=',')
         next(readCSV)
         for row in readCSV:
             loc = int(row[3])
             if loc >= 10:
-                code_snippet_min_10_lines.append(row[0] + "," + row[1] + "," + row[2] + "," + row[3] + "\n")
+                code_snippet_min_10_lines.append(row[0] + "," + row[1] + "," + row[2] + "," + row[3]+ "," + row[4]+"\n")
     write_lines(code_snippet_min_10_lines, output)
 
 

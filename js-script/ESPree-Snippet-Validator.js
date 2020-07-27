@@ -1,41 +1,88 @@
-const espree = require("espree");
+/**
+ *
+ * The provided 'soFilteredCodeSnippetPath' csv file should contains the following 5 columns
+ * CSV Header => [question_id, answer_id, block_position, loc, code_snippet]
+ *
+ *
+ */
 
 const fs = require('fs');
 const csv = require('csv-parser');
-const acceptedCodeSnippet = "/home/mrhmisu/Downloads/js_accepted_code_snippet_min10Lines.csv";
-//const acceptedCodeSnippet = "/home/mrhmisu/Downloads/demo.csv";
-const outputDirectory = "/home/mrhmisu/Downloads/Data";
+const espree = require("espree");
 
+const features = {
+    // enable JSX parsing
+    jsx: true,
+    // enable return in global scope
+    globalReturn: true,
+    // enable implied strict mode (if ecmaVersion >= 5)
+    impliedStrict: true
+}
 
-function readCodeSnippets(path, outputDir) {
-    var validCodeCounter = 0;
-    var totalCodeCounter = 0;
+/**
+ *Set a version typically the released year
+ * 2015->ES6, 2016->ES7, 2017->ES8,
+ * 2018->ES9, 2019->ES10, 2020->ES11
+ */
+const ecmaVersion = 2020;
 
-    fs.createReadStream(path)
+/**
+ *
+ * @param soFilteredCodeSnippetPath
+ * @param outputDirectoryPath
+ */
+function generateValidatedSOJSCodeSnippets(soFilteredCodeSnippetPath, outputDirectoryPath) {
+    let totalCodeSnippets = 0;
+    let validCodeSnippets = 0;
+    let inValidCodeSnippets = 0;
+
+    fs.createReadStream(soFilteredCodeSnippetPath)
         .pipe(csv())
         .on('data', function (row) {
-            totalCodeCounter++;
+            totalCodeSnippets++;
             let codeSnippet = covertHexStringToAscii(row['code_snippet']);
-            if (isValidCodeSnippet(codeSnippet)) {
-                let questionId = row['question_id'];
-                let answerId = row['answer_id'];
-                let fileName = validCodeCounter + "_" + questionId + "_" + answerId + ".js";
-                let filePath = outputDir + "/" + fileName;
-                //writeValidatedCodeSnippet(codeSnippet, filePath);
-                console.log("Counter=>" + validCodeCounter);
-                validCodeCounter++;
-            }
-            //console.log(i + '\n');
-            //i++;
+            let snippetLength = row['loc'];
+            if (snippetLength >= 10) {
+                if (isValidatedCodeSnippet(codeSnippet)) {
+                    let fileName = row['question_id'] + "_" + row['block_position'] + ".js";
+                    let filePath = outputDirectoryPath + "/" + fileName;
+                    writeValidatedCodeSnippet(codeSnippet, filePath);
+                    validCodeSnippets++;
+                } else
+                    inValidCodeSnippets++;
 
+            }
         })
         .on('end', function () {
-            console.log("Total Code Snippet:=" + totalCodeCounter + '\n');
-            console.log("Valid Code Snippet:=" + validCodeCounter + '\n');
-            console.log("Invalid Code Snippet:=" + (totalCodeCounter - validCodeCounter + '\n'));
+            printStatistic(totalCodeSnippets, validCodeSnippets, inValidCodeSnippets);
+        });
 
-        })
+}
 
+function isValidFileAndDirectory(soFilteredCodeSnippetPath, outputDirectoryPath) {
+    if (fs.existsSync(outputDirectoryPath) && fs.existsSync(soFilteredCodeSnippetPath)) return true;
+    return false;
+}
+
+function printStatistic(totalCodeSnippets, validCodeSnippets, inValidCodeSnippets) {
+    console.log("#########################################################")
+    console.log("Total Code-Snippets:=" + totalCodeSnippets);
+    console.log("Valid Code-Snippets:=" + validCodeSnippets);
+    console.log("Invalid Code-Snippets:=" + inValidCodeSnippets);
+    console.log("#########################################################")
+}
+
+function isValidatedCodeSnippet(sourceSnippet) {
+    const scriptMood = "script";
+    const moduleMood = "module";
+
+    if (!isValidated(sourceSnippet, scriptMood)) {
+        if (!isValidated(sourceSnippet, moduleMood)) {
+            return false;
+        }
+        return true;
+    }
+    return true;
 }
 
 function covertHexStringToAscii(hexString) {
@@ -46,51 +93,37 @@ function covertHexStringToAscii(hexString) {
     return str;
 }
 
-function isValidCodeSnippet(sourceCode) {
-    // Set to 3, 5 (default), 6, 7, 8, 9, or 10 to specify the version of ECMAScript syntax you want to use.
-    // You can also set to 2015 (same as 6), 2016 (same as 7), 2017 (same as 8), 2018 (same as 9),
-    // 2019 (same as 10), or 2020 (same as 11) to use the year-based naming.
-    const features = {
-        // enable JSX parsing
-        jsx: false,
-        // enable return in global scope
-        globalReturn: false,
-        // enable implied strict mode (if ecmaVersion >= 5)
-        impliedStrict: false
-    }
-    const version = 2020;
-
+function isValidated(sourceSnippet, sourceType) {
     try {
-        const astScript = espree.parse(sourceCode, {
+        const astScript = espree.parse(sourceSnippet, {
             range: true,
-            ecmaVersion: version,
-            sourceType: "script",
+            ecmaVersion: ecmaVersion,
+            sourceType: sourceType,
             ecmaFeatures: features
         });
         if (astScript != null) return true;
-    } catch (expScript) {
-        try {
-            const astModule = espree.parse(sourceCode, {
-                range: true,
-                ecmaVersion: version,
-                sourceType: "module",
-                ecmaFeatures: features
-            });
-            if (astModule != null) return true;
-        } catch (expModule) {
-            return false;
-        }
+        else return false;
+    } catch (exp) {
         return false;
     }
-    return false;
 }
-
 
 function writeValidatedCodeSnippet(content, fileName) {
     fs.writeFile(fileName, content, function (err) {
         if (err) throw err;
-        console.log('Saved!');
+        console.log(fileName + ' is saved');
     });
 }
 
-readCodeSnippets(acceptedCodeSnippet, outputDirectory);
+function executeScript() {
+    let cmdArguments = process.argv.slice(2);
+    let soFilteredCodeSnippetPath = cmdArguments[0];
+    let outputDirectoryPath = cmdArguments[1];
+    if (isValidFileAndDirectory(soFilteredCodeSnippetPath, outputDirectoryPath)) {
+        generateValidatedSOJSCodeSnippets(soFilteredCodeSnippetPath, outputDirectoryPath);
+    } else {
+        console.log("Invalid Arguments");
+    }
+}
+
+executeScript();
