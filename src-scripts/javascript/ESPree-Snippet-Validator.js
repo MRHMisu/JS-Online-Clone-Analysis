@@ -96,6 +96,7 @@ function isValidated(sourceSnippet, sourceType) {
     }
 }
 
+
 function isValidFileAndDirectoryAndLOC(soFilteredCodeSnippetPath, outputDirectoryPath, loc) {
     if (fs.existsSync(outputDirectoryPath) && fs.existsSync(soFilteredCodeSnippetPath) && loc > 0) return true;
     return false;

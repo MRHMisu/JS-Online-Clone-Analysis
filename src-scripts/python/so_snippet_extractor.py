@@ -74,6 +74,7 @@ def write_lines(contents, path):
 if __name__ == "__main__":
     # stackoverflow.com-Posts.7z (View Contents)	02-Jun-2020 01:04	15.1G
     # run with 4 command line arguments
+    # 1) SO-Post.xml 2) language 3) output_csv_file_path 4) batch_size_to_write_output
     # python code_snippet_extractor.py sample-posts.xml language output.csv batch_size
     so_post_xml_path = sys.argv[1]
     language_tag = sys.argv[2]
