@@ -28,20 +28,25 @@ const features = {
  */
 const ecmaVersion = 2017;
 
-function validateRepository(repositoryPath) {
-    const filter = "js";
-    const files = filterSourceFiles(repositoryPath, filter);
-    const totalFiles = files.length;
+function validateEachRepository(baseDirPath, projectName) {
+    const repositoryPath = baseDirPath + "/" + projectName
+    const jsFilter = "js";
+    const jsxFilter = "jsx"
+    let jsFiles = filterSourceFiles(repositoryPath, jsFilter);
+    let jsxFiles = filterSourceFiles(repositoryPath, jsxFilter);
+    let allFiles = [...jsFiles, ...jsxFiles];
+
+    const totalFiles = allFiles.length;
     let nonParsedFiles = 0;
     let parsedFiles = 0;
-    files.forEach(function (filepath) {
+    allFiles.forEach(function (filepath) {
         let content = fs.readFileSync(filepath).toString();
         if (isValidCodeSnippet(content, filepath))
             parsedFiles++;
         else
             nonParsedFiles++;
     });
-    printStatistic(repositoryPath, totalFiles, parsedFiles, nonParsedFiles);
+    return repositoryPath + "," + projectName + "," + totalFiles + "," + parsedFiles + "," + nonParsedFiles + "\n";
 
 }
 
@@ -96,27 +101,39 @@ function traverseDirectory(baseDirPath, filter, fileList) {
     }
 }
 
-function isValidDirectory(repositoryPath) {
-    if (fs.existsSync(repositoryPath)) return true;
+function isValidFileAndDirectory(baseDirPath, projectList) {
+    if (fs.existsSync(projectList) && fs.existsSync(baseDirPath)) return true;
     return false;
 }
 
-function printStatistic(repositoryPath, totalFiles, parsedFiles, nonParsedFiles) {
-    console.log("#########################################################")
-    console.log("In Project: " + repositoryPath)
-    console.log("Total '.js' files = " + totalFiles)
-    console.log("Successfully parsed files = " + parsedFiles);
-    console.log("Non-parsed files = " + nonParsedFiles);
-    console.log("#########################################################")
+
+function validateRepositories(baseDirPath, projectListFile) {
+    let results = [];
+    let header = "repositoryPath, project_name, total_files, parsed_files, non_parsed_files\n";
+    results.push(header);
+    let outputPath = baseDirPath + "/" + "parsedResult.csv"
+    const data = fs.readFileSync(projectListFile, 'UTF-8');
+    let lines = data.split(/\r?\n/);
+    const projects = lines.filter(e => e);
+    projects.forEach((p) => {
+        let projectResult = validateEachRepository(baseDirPath, p);
+        results.push(projectResult);
+    });
+
+    let processedResult = results.join("")
+    fs.writeFile(outputPath, processedResult, function (err) {
+        if (err) return console.log(err);
+        console.log("Result Saved to " + outputPath);
+    });
 }
+
 
 function executeScript() {
     let cmdArguments = process.argv.slice(2);
-    let projectPath = cmdArguments[0];
-    if (isValidDirectory) {
-        validateRepository(projectPath);
-    } else {
-        console.log("Invalid Arguments");
+    let projectListFile = cmdArguments[0];
+    let baseDirPath = cmdArguments[0];
+    if (isValidFileAndDirectory(baseDirPath, projectListFile)) {
+        validateRepositories(baseDirPath, projectListFile)
     }
 }
 

@@ -24,7 +24,7 @@ const features = {
  * 2015->ES6, 2016->ES7, 2017->ES8,
  * 2018->ES9, 2019->ES10, 2020->ES11
  */
-const ecmaVersion = 2020;
+const ecmaVersion = 2017;
 
 /**
  *
