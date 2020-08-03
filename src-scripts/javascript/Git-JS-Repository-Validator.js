@@ -29,12 +29,15 @@ const features = {
 const ecmaVersion = 2017;
 
 function validateRepository(repositoryPath) {
-    const filter = "js";
-    const files = filterSourceFiles(repositoryPath, filter);
-    const totalFiles = files.length;
+    const jsFilter = "js";
+    const jsxFilter = "jsx"
+    let jsFiles = filterSourceFiles(repositoryPath, jsFilter);
+    let jsxFiles = filterSourceFiles(repositoryPath, jsxFilter);
+    let allFiles = [...jsFiles, ...jsxFiles];
+    const totalFiles = allFiles.length;
     let nonParsedFiles = 0;
     let parsedFiles = 0;
-    files.forEach(function (filepath) {
+    allFiles.forEach(function (filepath) {
         let content = fs.readFileSync(filepath).toString();
         if (isValidCodeSnippet(content, filepath))
             parsedFiles++;
