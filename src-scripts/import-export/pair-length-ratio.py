@@ -24,15 +24,15 @@ def calculate_length_ratio(clone_report, length_ratio_path):
                 git_snippet_length = (int(end2) - int(start2)) + 1
                 length_ratio = float((so_snippet_length / git_snippet_length))
 
-                if length_ratio >= 0.5:
-                    pair = str(serial_no) + "," + str(
-                        git_snippet_rank) + "," + clone_method1 + "," + start1 + "," + end1 + "," + str(
-                        so_snippet_length) + "," + clone_method2 + "," + start2 + "," + end2 + "," + str(
-                        git_snippet_length) + "," + str(
-                        length_ratio) + '\n'
-                    all_pairs_line.append(pair)
-                    # put break to consider only the 1st rank that's length ratio >=0.5
-                    break
+                # if length_ratio >= 0.5:
+                pair = str(serial_no) + "," + str(
+                    git_snippet_rank) + "," + clone_method1 + "," + start1 + "," + end1 + "," + str(
+                    so_snippet_length) + "," + clone_method2 + "," + start2 + "," + end2 + "," + str(
+                    git_snippet_length) + "," + str(
+                    length_ratio) + '\n'
+                all_pairs_line.append(pair)
+                # put break to consider only the 1st rank that's length ratio >=0.5
+                # break
 
         write_lines(all_pairs_line, length_ratio_path)
 
@@ -45,8 +45,9 @@ def write_lines(contents, path):
 
 def execute_script():
     clone_report_path = "test_qr_12-08-20_09-52-406.csv"
-    length_ratio_path = "unique_top_rank pairs_len_ratio_0.5.csv"
-    # length_ratio_path = "all_pairs.csv"
+    # length_ratio_path = "unique_top_rank pairs_len_ratio_0.5.csv"
+    # length_ratio_path = "pair-data/all_pairs_length_ratio_0.5_greater.csv"
+    length_ratio_path = "pair-data/all_pairs.csv"
     calculate_length_ratio(clone_report_path, length_ratio_path)
 
 

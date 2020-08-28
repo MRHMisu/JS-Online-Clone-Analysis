@@ -6,7 +6,7 @@ Export clone_pairs into a JSON file. That can be exported into firebase or Mongo
 import csv
 import json
 
-siamese_filtered_clone_pairs_file = 'all_pairs.csv'
+siamese_filtered_clone_pairs_file = 'pair-data/all_pairs.csv'
 output_json_file = "test-pair.json"
 # file header
 # serial_no, rank, so_snippet_path, so_start, so_end, length, git_snippet_path, git_start, git_end, length, length_ratio
