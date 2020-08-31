@@ -19,7 +19,7 @@ def read_lines(path):
 
 project_name = 'so-js-clone-analysis'
 
-filename = './pair-data/SOxGH-without-overlap-0.5-ratio.csv'
+filename = 'pair-data/SOxGH-without-overlap-0.5-ratio.csv'
 so_snippet_base_path = '/home/ubuntu/experiment/so-query/'
 github_snippet_base_path = '/home/ubuntu/experiment/git-js-corpus/'
 
