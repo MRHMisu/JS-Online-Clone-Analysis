@@ -17,12 +17,20 @@ json_dictionary = {}
 dictionary_list = []
 
 
-def read_lines(path):
-    file_reader = open(path, 'r', encoding='utf-8', errors='ignore')
-    lines = file_reader.readlines()
+def get_file_content(path):
+    file_reader = open(path, 'r')
+    content = file_reader.read()
     file_reader.close()
-    return lines
+    return content
 
+
+total_pair = 0
+
+with open(siamese_filtered_clone_pairs_file) as csvfile:
+    readCSV = csv.reader(csvfile, delimiter=',')
+    # count how many record we have
+    for row in readCSV:
+        total_pair += 1
 
 with open(siamese_filtered_clone_pairs_file) as csvfile:
     count = 0
@@ -39,28 +47,28 @@ with open(siamese_filtered_clone_pairs_file) as csvfile:
         git_end = row[8]
         length = row[9]
         length_ratio = row[10]
-        so_code = read_lines(so_snippet_base_path + so_snippet_path)
-        git_code = read_lines(github_snippet_base_path + git_snippet_path)
+        so_code = get_file_content(so_snippet_base_path + so_snippet_path)
+        git_code = get_file_content(github_snippet_base_path + git_snippet_path)
 
         dictionary_list.append({
             '_id': count,
-            'file1': so_snippet_path[len(so_snippet_base_path):],
+            'file1': so_snippet_path,
             'start1': so_start,
             'end1': so_end,
             'code1': so_code,
-            'file2': git_snippet_path[len(github_snippet_base_path):],
+            'file2': git_snippet_path,
             'start2': git_start,
             'end2': git_end,
             'code2': git_code,
             'classification': '',
             'notes': '',
-            'total': 0
+            'total': total_pair
         })
         print("Processed row {}".format(count))
         count += 1
 
     print("Exported {} pairs".format(len(dictionary_list)))
-    fcontent = json.dumps(dictionary_list)
+    fcontent = json.dumps(dictionary_list, indent=4, sort_keys=True)
     file = open(output_json_file, 'w')
     file.write(fcontent)
     file.close()

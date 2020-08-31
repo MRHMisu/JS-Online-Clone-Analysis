@@ -12,14 +12,14 @@ siamese_filtered_clone_pairs_file = 'pair-data/SOxGH-without-overlap-0.5-ratio.c
 so_snippet_base_path = '/home/ubuntu/experiment/so-query/'
 github_snippet_base_path = '/home/ubuntu/experiment/git-js-corpus/'
 stack_overflow_base_path = 'https://stackoverflow.com/'
-dictionary_list = []
+line_list = []
+so_gh_direction_path = 'so-gh-direction.csv'
 
 
-def read_lines(path):
-    file_reader = open(path, 'r', encoding='utf-8', errors='ignore')
-    lines = file_reader.readlines()
-    file_reader.close()
-    return lines
+def write_lines(contents, path):
+    file_writer = open(path, 'w')
+    file_writer.writelines(contents)
+    file_writer.close()
 
 
 with open(siamese_filtered_clone_pairs_file) as csvfile:
@@ -27,11 +27,10 @@ with open(siamese_filtered_clone_pairs_file) as csvfile:
     readCSV = csv.reader(csvfile, delimiter=',')
     for row in readCSV:
         git_snippet_path = row[6]
-        git_code = read_lines(github_snippet_base_path + git_snippet_path)
+        git_file_path = github_snippet_base_path + git_snippet_path
+        git_code_reader = open(git_file_path, 'r', encoding='utf-8', errors='ignore')
+        git_code = git_code_reader.read()
         if stack_overflow_base_path in git_code:
-            dictionary_list.append(row)
-
-
-file = open('so-gh-direction.csv', 'w')
-file.writelines(dictionary_list)
-file.close()
+            line_list.append(",".join(row) + '\n')
+        git_code_reader.close()
+    write_lines(line_list, so_gh_direction_path)
