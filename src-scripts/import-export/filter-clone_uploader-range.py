@@ -70,6 +70,9 @@ with open(filename) as csvfile:
         git_end = row[8]
         length = row[9]
         length_ratio = row[10]
+        classification = ''  # row[11]
+        notes = ''  # row[12]
+
         so_code = read_content(so_snippet_base_path + so_snippet_path)
         git_code = read_line_with_range((github_snippet_base_path + git_snippet_path), int(git_start) - 1, int(git_end))
 
@@ -83,8 +86,8 @@ with open(filename) as csvfile:
                 'start2': git_start,
                 'end2': git_end,
                 'code2': git_code,
-                'classification': '',
-                'notes': '',
+                'classification': classification,
+                'notes': notes,
                 'total': rowcount
             }})
         print("Processed row {}".format(count))
