@@ -4,6 +4,7 @@ Export clone_pairs into a JSON file. That can be exported into firebase or Mongo
 """
 
 import csv
+import itertools
 import json
 
 siamese_filtered_clone_pairs_file = 'pair-data/SOxGH-without-overlap-0.5-ratio.csv'
@@ -22,6 +23,13 @@ def get_file_content(path):
     content = file_reader.read()
     file_reader.close()
     return content
+
+
+def read_line_with_range(file_path, star, end):
+    lines = []
+    with open(file_path, "r") as text_file:
+        for line in itertools.islice(text_file, star, end):
+            lines.append(line)
 
 
 total_pair = 0
@@ -48,7 +56,7 @@ with open(siamese_filtered_clone_pairs_file) as csvfile:
         length = row[9]
         length_ratio = row[10]
         so_code = get_file_content(so_snippet_base_path + so_snippet_path)
-        git_code = get_file_content(github_snippet_base_path + git_snippet_path)
+        git_code = read_line_with_range((github_snippet_base_path + git_snippet_path), int(git_start) - 1, int(git_end))
 
         dictionary_list.append({
             '_id': count,
