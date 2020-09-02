@@ -30,6 +30,7 @@ def read_line_with_range(file_path, star, end):
     with open(file_path, "r") as text_file:
         for line in itertools.islice(text_file, star, end):
             lines.append(line)
+    return '\n'.join(lines)
 
 
 total_pair = 0
