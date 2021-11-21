@@ -1,0 +1,11 @@
+Siamese Reported Clones
+---SO Snippets    := 1534
+---Total Pairs := 14343
+
+After considering pairs length ratio >=0.5 (SO_length/GH_length >= 50%)
+---Total Pairs         := 6444
+---Unique SO Snippets  := 802
+--- Unique GH Snippets := 942
+
+After Joining Unique(SO and GH)
+-- Total Pairs         := 1483
