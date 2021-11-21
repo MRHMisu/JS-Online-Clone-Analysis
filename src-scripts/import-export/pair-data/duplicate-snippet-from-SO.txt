@@ -1,3 +1,0 @@
-pair-1
---https://stackoverflow.com/questions/5605401/insert-link-in-contenteditable-element
---https://stackoverflow.com/questions/1479784/contenteditable-and-non-button-elements
