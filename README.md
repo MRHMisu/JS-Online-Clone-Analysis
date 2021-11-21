@@ -11,7 +11,7 @@ It is a utility repository for the JS-Online-Clone-Analysis between Stack Overfl
  
 ```
 .
-└── JS-Online-Clone-Analysis-Data
+└── JS-Online-Clone-Analysis-Dataset
     ├── clone_pair
     │   ├── 14343_pair_statistic.txt
     │   ├── 1466_filtered_clone_pairs_statistics.txt
