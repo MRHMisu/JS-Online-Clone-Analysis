@@ -157,4 +157,4 @@ fabric.properties
 /node_modules
 
 ## ignore the serviceAccountKey
-scripts/import-export/serviceAccountKey.json
+src/import-export/serviceAccountKey.json
